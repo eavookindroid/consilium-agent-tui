@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export CODEX_HOME="${HOME}/.gigachat"
+export API_KEY="YOUR_API_KEY"
+
+exec codex "$@"
+

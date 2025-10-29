@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+# Враппер для утилиты claude, автоматически добавляет --settings,
+# подхватывая файл настроек из ~/.glm/<профиль>.json.
+
+set -euo pipefail
+
+CONFIG_DIR="${GLM_SETTINGS_DIR:-"$HOME/.glm"}"
+resolve_claude_bin() {
+    if [[ -n "${CLAUDE_REAL_BIN:-}" ]]; then
+        printf '%s\n' "$CLAUDE_REAL_BIN"
+        return
+    fi
+
+    local script_path
+    script_path="$(readlink -f "$0")"
+    local IFS=':'
+    read -ra search_path <<< "${CLAUDE_SEARCH_PATH:-$PATH}"
+
+    for dir in "${search_path[@]}"; do
+        [[ -z "$dir" ]] && dir='.'
+        local candidate="$dir/claude"
+        if [[ -x "$candidate" ]]; then
+            if [[ "$(readlink -f "$candidate")" != "$script_path" ]]; then
+                printf '%s\n' "$candidate"
+                return 0
+            fi
+        fi
+    done
+
+    printf 'Не удалось найти исполняемый файл claude. Установите CLAUDE_REAL_BIN.\n' >&2
+    exit 127
+}
+
+deduce_profile() {
+    local script_name
+    script_name="$(basename "$0")"
+    script_name="${script_name%.sh}"
+
+    case "$script_name" in
+        claude-*) printf '%s\n' "${script_name#claude-}" ;;
+        claude_*) printf '%s\n' "${script_name#claude_}" ;;
+        claude)   printf '\n' ;;
+        *)        printf '%s\n' "$script_name" ;;
+    esac
+}
+
+ensure_settings() {
+    local path="$1"
+    if [[ "$path" =~ ^[[:space:]]*\{ ]] || [[ "$path" =~ ^[[:space:]]*\[ ]]; then
+        return
+    fi
+    if [[ ! -e "$path" ]]; then
+        printf 'Файл настроек не найден: %s\n' "$path" >&2
+        exit 1
+    fi
+}
+
+claude_bin="$(resolve_claude_bin)"
+if [[ ! -d "$CONFIG_DIR" ]]; then
+    mkdir -p "$CONFIG_DIR"
+fi
+
+resolve_settings_path() {
+    if [[ -n "${GLM_SETTINGS_FILE:-}" ]]; then
+        printf '%s\n' "$GLM_SETTINGS_FILE"
+        return
+    fi
+
+    declare -a candidates=()
+
+    local profile_from_env="${GLM_PROFILE:-}"
+    if [[ -n "$profile_from_env" ]]; then
+        candidates+=("$CONFIG_DIR/${profile_from_env}.json")
+    fi
+
+    local profile_from_name
+    profile_from_name="$(deduce_profile)"
+    if [[ -n "$profile_from_name" ]]; then
+        candidates+=("$CONFIG_DIR/${profile_from_name}.json")
+    fi
+
+    candidates+=("$CONFIG_DIR/settings.json" "$CONFIG_DIR/default.json" "$CONFIG_DIR/claude.json")
+
+    for candidate in "${candidates[@]}"; do
+        if [[ -f "$candidate" ]]; then
+            printf '%s\n' "$candidate"
+            return
+        fi
+    done
+
+    local first_json=''
+    while IFS= read -r -d '' file; do
+        first_json="$file"
+        break
+    done < <(find "$CONFIG_DIR" -maxdepth 1 -type f -name '*.json' -print0 | sort -z)
+
+    if [[ -n "$first_json" ]]; then
+        printf '%s\n' "$first_json"
+        return
+    fi
+
+    printf 'Не найден ни один JSON-файл настроек в %s\n' "$CONFIG_DIR" >&2
+    printf 'Создайте, например: %s\n' "$CONFIG_DIR/settings.json" >&2
+    exit 1
+}
+
+settings_path="$(resolve_settings_path)"
+ensure_settings "$settings_path"
+
+args=("$@")
+has_settings=0
+
+for ((i = 0; i < ${#args[@]}; i++)); do
+    case "${args[$i]}" in
+        --settings|--settings=*)
+            has_settings=1
+            break
+            ;;
+    esac
+done
+
+if [[ $has_settings -eq 0 ]]; then
+    args+=(--settings "$settings_path")
+fi
+
+exec "$claude_bin" "${args[@]}"

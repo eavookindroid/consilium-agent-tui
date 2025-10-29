@@ -1,0 +1,14 @@
+sandbox_mode = "danger-full-access"
+approval_policy = "never"
+model = "GigaChat/GigaChat-2-Max"
+model_provider = "MYPROVIDER"
+model_reasoning_effort = "high"
+
+[sandbox_workspace_write]
+network_access = true
+
+[model_providers.MYPROVIDER]
+name = "AnyText"
+base_url = "https://host-api.example.com/v1"
+env_key = "MY_API_KEY"
+wire_api = "chat"

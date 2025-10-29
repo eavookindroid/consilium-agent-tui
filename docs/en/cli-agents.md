@@ -41,9 +41,9 @@ See the section [Connecting Alternative Providers](#connecting-alternative-provi
 npm install -g @anthropic-ai/claude-code
 ```
 
-**Authentication:**
+**Start:**
 ```bash
-claude --login
+claude
 ```
 
 **Testing:**
@@ -64,14 +64,14 @@ claude -p "Hello, test message"
 npm install -g @openai/openai-codex
 ```
 
-**Authentication:**
+**Start:**
 ```bash
-codex auth
+codex
 ```
 
 **Testing:**
 ```bash
-codex -p "Hello, test message"
+codex exec --skip-git-repo-check "Hello!"
 ```
 
 **Configuration in Consilium:**
@@ -119,6 +119,17 @@ Consilium supports connecting any LLM providers through wrappers for Claude CLI 
 
 >💡 You can use official CLI agents `claude` and `codex` for cheap or completely free usage by configuring wrapper scripts to access third-party LLM providers and models, if you know where to find them :)
 
+download project
+```bash
+git clone https://github.com/eavookindroid/consilium-agent-tui.git
+cd consilium-agent-tui
+```
+
+or update it
+```bash
+cd consilium-agent-tui
+git pull
+```
 
 ### Via Claude CLI (Anthropic API standard)
 

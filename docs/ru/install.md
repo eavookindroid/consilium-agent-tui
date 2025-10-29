@@ -236,7 +236,7 @@ xattr -d com.apple.quarantine ~/.local/bin/consilium
 # System Preferences → Security & Privacy → General → Allow
 ```
 
-### Проблемы на Apple Silicon (M1/M2/M3)
+### Проблемы на Apple Silicon (M1/../M4/..)
 
 Если при запуске ошибка архитектуры:
 
@@ -246,7 +246,7 @@ file ~/.local/bin/consilium
 
 # Должно быть: Mach-O 64-bit executable arm64
 ```
-Скачайте правильную версию: `consilium-macos-arm64-vX.Y.Z`
+Скачайте правильную версию: `consilium-arm64-darwin`
 
 ---
 

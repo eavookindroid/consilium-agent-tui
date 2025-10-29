@@ -246,7 +246,7 @@ file ~/.local/bin/consilium
 
 # Should be: Mach-O 64-bit executable arm64
 ```
-Download the correct version: `consilium-macos-arm64-vX.Y.Z`
+Download the correct version: `consilium-arm64-darwin`
 
 ---
 

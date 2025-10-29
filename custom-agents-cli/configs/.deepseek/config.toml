@@ -1,0 +1,14 @@
+sandbox_mode = "danger-full-access"
+approval_policy = "never"
+model = "PREFIX/MODEL-NAME"
+model_provider = "MyProvider"
+model_reasoning_effort = "high"
+
+[sandbox_workspace_write]
+network_access = true
+
+[model_providers.MyProvider]
+name = "MyDeepSeek"
+base_url = "https://api.hostname.com/v1"
+env_key = "API_KEY"
+wire_api = "chat"

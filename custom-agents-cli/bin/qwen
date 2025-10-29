@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export CODEX_HOME="${HOME}/.qwen"
+export API_KEY="YOUR_API_KEY"
+
+exec codex "$@"
