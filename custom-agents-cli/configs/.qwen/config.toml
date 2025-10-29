@@ -1,0 +1,14 @@
+sandbox_mode = "danger-full-access"
+approval_policy = "never"
+model = "Qwen/Qwen3-Coder-480B-A35B-Instruct"
+model_provider = "MYPROVIDER"
+model_reasoning_effort = "high"
+
+[sandbox_workspace_write]
+network_access = true
+
+[model_providers.MYPROVIDER]
+name = "AnyTEXT"
+base_url = "https://api-host.example.org/blah/blah/v1"
+env_key = "API_KEY"
+wire_api = "chat"
