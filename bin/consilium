@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+#
+# Consilium Agent - Universal Launcher
+#
+# Copyright (c) 2025 Artel Team
+# Licensed under Artel Team Non-Commercial License (see LICENSE file)
+#
+# Automatically detects OS and launches with proper Python:
+# - Linux (Debian): uses system Python with apt packages
+# - macOS: uses venv from ~/.consilium/
+#
+# Usage:
+#   ./consilium              # Default INFO
+#   ./consilium DEBUG        # DEBUG level
+#   ./consilium TRACE        # TRACE level (full protocol)
+#   ./consilium ERROR        # ERROR level (errors only)
+#
+
+# Detect script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT="$SCRIPT_DIR/consilium-main.py"
+
+# Detect OS and launch
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    # Linux (Debian): run directly (system packages)
+    exec "$SCRIPT" "$@"
+
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS: run via venv
+    VENV_PYTHON="$HOME/.consilium/venv/bin/python3"
+
+    if [ ! -f "$VENV_PYTHON" ]; then
+        echo "❌ Error: Virtual environment not found at $HOME/.consilium/venv"
+        echo ""
+        echo "Please run installer first:"
+        echo "  ./install.sh"
+        echo ""
+        exit 1
+    fi
+
+    exec "$VENV_PYTHON" "$SCRIPT" "$@"
+
+else
+    echo "❌ Unsupported OS: $OSTYPE"
+    echo "   Supported: Linux (Debian), macOS"
+    exit 1
+fi
