@@ -55,6 +55,10 @@ The development team `Artel Team` **bears no responsibility** for any negative c
 
 😈 Use the application **at your own risk**. It is recommended to initially work with data backups and in isolated test environments.
 
+# Main window
+
+<a href="./img/intro.png" target="_blank"><img src="./img/intro.png" alt="Первый диалог после запуска" width="800"></a>
+
 ## Documentation
 
 - [Installation](docs/en/install.md) - Application installation
